@@ -68,6 +68,31 @@ async function run() {
             res.json(result)
         })
 
+        app.get("/allBlogs", async (req, res) => {
+            const result = await blogsCollection.find({}).toArray()
+            res.json(result)
+        })
+
+        app.delete("/deleteSingleBlog/:blogId", async (req, res) => {
+            const id = req.params.blogId;
+            const query = { _id: ObjectId(id) };
+            const result = await blogsCollection.deleteOne(query)
+            res.json(result)
+        })
+
+        app.put("/handleStatus/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    status: `Approved`
+                },
+            };
+            const result = await blogsCollection.updateOne(filter, updateDoc, options);
+            res.json(result)
+        })
+
     } finally {
         //   await client.close();
     }
